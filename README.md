@@ -33,3 +33,4 @@ npm run lint    # ESLint
 
 - [`docs/00-concept.md`](docs/00-concept.md) — 기획/스코프/데이터 소싱 전략
 - [`docs/01-setup.md`](docs/01-setup.md) — 초기 세팅 기록과 로드맵
+- [`docs/02-schema.md`](docs/02-schema.md) — 데이터 모델/스키마/시드 포맷

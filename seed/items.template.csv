@@ -1,0 +1,5 @@
+name,category,waste_type,keywords,default_method
+책상,가구,large_waste,책상|테이블|데스크,
+매트리스,침구,large_waste,매트리스|침대매트,
+서랍장,가구,large_waste,서랍장|수납장|장롱,
+선풍기,가전,large_waste,선풍기|써큘레이터,

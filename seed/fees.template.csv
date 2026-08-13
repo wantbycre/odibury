@@ -1,0 +1,5 @@
+region_slug,item_name,spec_label,amount_krw,method,note
+gwanak,책상,길이 1m 미만,3000,,EXAMPLE-03단계에서 관악구 조례 실값으로 교체
+gwanak,책상,길이 1m 이상,5000,,EXAMPLE-03단계에서 관악구 조례 실값으로 교체
+gwanak,매트리스,싱글,5000,,EXAMPLE-03단계에서 관악구 조례 실값으로 교체
+gwanak,매트리스,퀸/킹,8000,,EXAMPLE-03단계에서 관악구 조례 실값으로 교체
