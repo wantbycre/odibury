@@ -1,32 +1,69 @@
-import { Button } from "@/components/ui/button";
+import { createSupabaseClient } from "@/lib/supabase";
+import { WasteSearch } from "@/components/waste-search";
+import type { Region, Item, Fee, Tip } from "@/types/db";
 
 /**
- * 홈(랜딩) 임시 화면.
- * 01-setup 단계에서는 스캐폴딩/shadcn/테마가 정상 동작하는지 확인하는
- * 최소 플레이스홀더만 둔다. 실제 핵심 플로우(동네 선택 → 품목 검색 →
- * 수수료·방법·신고링크)는 이후 단계에서 구현한다.
+ * 요청 시점에 데이터를 조회한다(force-dynamic).
+ * - 빌드 시 Supabase 로 네트워크를 태우지 않으므로 CI/빌드가 외부 상태에 안 흔들린다.
+ * - 데이터가 자주 안 바뀌면 이후 ISR(revalidate)로 최적화할 수 있다.
  */
-export default function Home() {
-  return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6 text-center">
-      {/* 서비스 아이덴티티: 한국어 이름을 크게 노출 */}
-      <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
-        어디버려 <span className="text-primary">♻️</span>
-      </h1>
+export const dynamic = "force-dynamic";
 
-      {/* 한 줄 가치 제안(value proposition) */}
-      <p className="max-w-md text-lg leading-8 text-muted-foreground">
-        이거 어디에 어떻게 버려? 우리동네 기준 분리배출·대형폐기물 정보를
-        3초 만에 확인하세요.
-      </p>
+// v1 은 관악구 단일 지역. 이후 [slug] 라우트로 다지역 확장.
+const REGION_SLUG = "gwanak";
 
-      {/* shadcn Button + 초록 primary 테마 동작 확인용 (임시 CTA) */}
-      <Button size="lg">동네 선택하고 시작하기</Button>
+export default async function Home() {
+  let region: Region | null = null;
+  let items: Item[] = [];
+  let fees: Fee[] = [];
+  let tips: Tip[] = [];
+  let errored = false;
 
-      {/* 현재 개발 단계 표시 (임시) */}
-      <p className="rounded-full bg-muted px-4 py-1.5 text-sm text-muted-foreground">
-        🚧 01-setup · 스캐폴딩 + shadcn/ui + 초록 테마 완료
-      </p>
-    </main>
-  );
+  try {
+    const supabase = createSupabaseClient();
+
+    // 1) 활성 지역 조회
+    const { data: regionData } = await supabase
+      .from("region")
+      .select("*")
+      .eq("slug", REGION_SLUG)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    region = regionData as Region | null;
+
+    // 2) 지역이 있으면 품목/수수료/팁을 병렬 조회
+    if (region) {
+      const [itemsRes, feesRes, tipsRes] = await Promise.all([
+        supabase.from("item").select("*").order("name"),
+        supabase.from("fee").select("*").eq("region_id", region.id),
+        supabase
+          .from("tip")
+          .select("*")
+          .eq("region_id", region.id)
+          .eq("status", "approved"),
+      ]);
+      items = (itemsRes.data as Item[]) ?? [];
+      fees = (feesRes.data as Fee[]) ?? [];
+      tips = (tipsRes.data as Tip[]) ?? [];
+    }
+  } catch {
+    // env 미설정/네트워크 오류 등 → 아래 fallback 렌더
+    errored = true;
+  }
+
+  // 데이터를 못 불러온 경우의 안내 화면
+  if (errored || !region) {
+    return (
+      <main className="mx-auto flex max-w-md flex-1 flex-col items-center justify-center gap-3 px-6 text-center">
+        <h1 className="text-2xl font-bold">어디버려 ♻️</h1>
+        <p className="text-sm text-muted-foreground">
+          데이터를 불러오지 못했어요. Supabase 환경변수(.env.local)와 시드 상태를
+          확인해주세요.
+        </p>
+      </main>
+    );
+  }
+
+  return <WasteSearch region={region} items={items} fees={fees} tips={tips} />;
 }

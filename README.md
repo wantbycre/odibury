@@ -35,3 +35,4 @@ npm run lint    # ESLint
 - [`docs/01-setup.md`](docs/01-setup.md) — 초기 세팅 기록과 로드맵
 - [`docs/02-schema.md`](docs/02-schema.md) — 데이터 모델/스키마/시드 포맷
 - [`docs/03-seed.md`](docs/03-seed.md) — 관악구 실데이터 출처와 시딩
+- [`docs/04-search.md`](docs/04-search.md) — 핵심 검색 플로우 UI
