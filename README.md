@@ -2,7 +2,7 @@
 
 > 이거 **어디에·어떻게·얼마에** 버려? — 우리동네 기준 분리배출·대형폐기물 정보를 3초에 판단해주는 서비스.
 
-**🔗 라이브: https://odibury.vercel.app** (관악·강남·노원·영등포 지원)
+**🔗 라이브: https://odibury.vercel.app** (관악·강남·노원·영등포·송파·강서·은평 — 서울 7개 구 지원)
 
 ## 무엇을 하는가
 
@@ -17,11 +17,11 @@
 
 - **저작권 클린**: 사실 데이터(지자체 조례 수수료·품목) + 크라우드소싱만 사용.
 - **결제 없음**: 신고/납부는 지자체 시스템으로 링크만 연결.
-- **한 동네부터**: v1은 관악구 하나로 완성품. 파편화가 곧 진입장벽(해자).
+- **한 동네부터**: 관악구 하나로 시작 → 현재 서울 7개 구. 파편화가 곧 진입장벽(해자).
 
 ## 기술 스택
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · shadcn/ui · (예정) Supabase
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · shadcn/ui · Supabase
 
 ## 개발
 
@@ -38,6 +38,8 @@ npm run lint    # ESLint
 - [`docs/02-schema.md`](docs/02-schema.md) — 데이터 모델/스키마/시드 포맷
 - [`docs/03-seed.md`](docs/03-seed.md) — 관악구 실데이터 출처와 시딩
 - [`docs/04-search.md`](docs/04-search.md) — 핵심 검색 플로우 UI
+- [`docs/05-deploy.md`](docs/05-deploy.md) — Vercel 배포 + SEO 환경변수
+- [`docs/TODO.md`](docs/TODO.md) — 백로그(제보폼 등)
 
 ---
 
