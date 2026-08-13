@@ -1,2 +1,5 @@
 sido,sigungu,name,slug,report_url,report_system,large_waste_method,recycle_guide_url,source_note,source_updated_at,is_active
 서울특별시,관악구,서울 관악구,gwanak,https://smartclean.gwanak.go.kr/online/bulky/request,자체,"인터넷(스마트클린 관악) 또는 전화(02-882-5677) 신고 → 결제(카드/가상계좌) 후 배출번호(신고필증) 발급 → 번호 부착·기재 → 일~금 저녁 6시~자정 사이 내 집·점포 앞 배출",,스마트클린 관악(자체 시스템) · 서울특별시 관악구 폐기물 관리 조례 제26조,2026-08-13,true
+서울특별시,강남구,서울 강남구,gangnam,https://clean.gangnam.go.kr/use/biwa/USEBIWA02030000.do,자체,"배출 3일 전까지 온라인(휴대폰 인증) 또는 전화(태화용역 1522-3833) 신청 → 결제 → 접수증 출력·부착 → 지정일 배출(월~토 수거)",,강남구 자원순환 종합포털 clean.gangnam.go.kr,2026-08-13,true
+서울특별시,노원구,서울 노원구,nowon,https://smartclean.nowon.kr/online/bulky/request,자체,"인터넷/모바일(스마트클린 노원) 신청 → 카드 결제 → 배출필증 인쇄·부착 → 집·건물 앞 배출(월~토 07~16시, 배출일로부터 일주일 이내 수거)",,스마트클린 노원 smartclean.nowon.kr,2026-08-13,true
+서울특별시,영등포구,서울 영등포구,yeongdeungpo,https://smartclean.ydp.go.kr/online/bulky/request,자체,"스마트클린 영등포에서 24시간 온라인 신고 → 결제(카드/계좌) → 신고필증 인쇄·부착 → 지정일시 배출 (무단투기 시 과태료)",,스마트클린 영등포 smartclean.ydp.go.kr,2026-08-13,true

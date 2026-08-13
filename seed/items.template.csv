@@ -17,3 +17,6 @@ name,category,waste_type,keywords,default_method
 유모차,생활,large_waste,유모차|유아차,
 거울,생활,large_waste,거울|전신거울,
 옷걸이,생활,large_waste,옷걸이|행거|스탠드행거,
+화장대,가구,large_waste,화장대,
+러닝머신,생활,large_waste,러닝머신|런닝머신|트레드밀,
+안마의자,가구,large_waste,안마의자|마사지의자,

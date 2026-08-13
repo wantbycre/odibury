@@ -12,32 +12,41 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-/** 원화 포맷: 3000 → "3,000원" */
+/** 원화 포맷: 3000 → "3,000원", 0 → "무료" */
 function krw(amount: number) {
-  return `${amount.toLocaleString("ko-KR")}원`;
+  return amount === 0 ? "무료" : `${amount.toLocaleString("ko-KR")}원`;
 }
 
 interface Props {
-  region: Region;
+  regions: Region[];
   items: Item[];
   fees: Fee[];
   tips: Tip[];
 }
 
 /**
- * 핵심 플로우 UI (클라이언트).
- * 동네(region)는 상위에서 확정되어 내려오고, 여기서는
- * 품목 검색 → 선택 → 규격별 수수료·배출방법·신고 딥링크 결과를 보여준다.
- * 데이터가 소량(수십 행)이라 전량 내려받아 클라이언트에서 필터링한다(라운드트립 0).
+ * 핵심 플로우 UI (클라이언트, 다지역).
+ * 지역 선택 → 품목 검색 → 선택 품목의 규격별 수수료 + 배출방법 + 신고 딥링크.
+ * 데이터가 소량이라 전량 받아 클라이언트에서 필터링한다(라운드트립 0).
  */
-export function WasteSearch({ region, items, fees, tips }: Props) {
+export function WasteSearch({ regions, items, fees, tips }: Props) {
+  // 기본 지역: 관악(gwanak)이 있으면 우선, 없으면 첫 지역
+  const defaultRegionId =
+    regions.find((r) => r.slug === "gwanak")?.id ?? regions[0].id;
+
+  const [regionId, setRegionId] = useState(defaultRegionId);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // 검색: 품목명 또는 keywords 동의어에 질의어가 포함되면 매치(대소문자 무시)
+  const region = useMemo(
+    () => regions.find((r) => r.id === regionId) ?? regions[0],
+    [regions, regionId]
+  );
+
+  // 검색: 품목명 또는 keywords 동의어 부분일치(대소문자 무시)
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return items; // 빈 검색어면 전체(브라우즈)
+    if (!q) return items;
     return items.filter((it) => {
       if (it.name.toLowerCase().includes(q)) return true;
       return it.keywords.some((k) => k.toLowerCase().includes(q));
@@ -49,32 +58,53 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
     [items, selectedId]
   );
 
-  // 선택 품목의 규격별 수수료(저렴한 순)
+  // 선택 품목 × 현재 지역의 규격별 수수료(저렴한 순)
   const selectedFees = useMemo(() => {
     if (!selected) return [];
     return fees
-      .filter((f) => f.item_id === selected.id)
+      .filter((f) => f.item_id === selected.id && f.region_id === region.id)
       .sort((a, b) => a.amount_krw - b.amount_krw);
-  }, [fees, selected]);
+  }, [fees, selected, region]);
 
-  // 팁: 이 품목 전용 + 지역 전체(item_id === null)
+  // 팁: 현재 지역 + (이 품목 전용 또는 지역 전체)
   const selectedTips = useMemo(() => {
-    if (!selected) return tips.filter((t) => t.item_id === null);
-    return tips.filter((t) => t.item_id === selected.id || t.item_id === null);
-  }, [tips, selected]);
+    return tips.filter(
+      (t) =>
+        t.region_id === region.id &&
+        (t.item_id === null || (selected && t.item_id === selected.id))
+    );
+  }, [tips, region, selected]);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 px-4 py-8">
-      {/* 헤더: 서비스명 + 현재 동네 */}
+      {/* 헤더 */}
       <header className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold tracking-tight">
           어디버려 <span className="text-primary">♻️</span>
         </h1>
         <p className="text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{region.name}</span> 기준 ·
-          버릴 물건을 검색하세요
+          우리동네 기준 분리배출·대형폐기물 정보를 3초에
         </p>
       </header>
+
+      {/* 지역 선택 */}
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="region" className="text-sm font-medium">
+          동네 선택
+        </label>
+        <select
+          id="region"
+          value={regionId}
+          onChange={(e) => setRegionId(e.target.value)}
+          className="h-11 rounded-md border border-input bg-background px-3 text-base focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        >
+          {regions.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* 검색창 */}
       <Input
@@ -86,7 +116,7 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
         className="h-12 text-base"
       />
 
-      {/* 품목 후보 칩 목록 */}
+      {/* 품목 후보 칩 */}
       <div className="flex flex-wrap gap-2">
         {filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground">
@@ -117,6 +147,9 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
             <div className="flex items-center gap-2">
               <CardTitle className="text-xl">{selected.name}</CardTitle>
               <Badge variant="secondary">{selected.category}</Badge>
+              <span className="ml-auto text-sm text-muted-foreground">
+                {region.name}
+              </span>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
@@ -127,7 +160,7 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
               </h3>
               {selectedFees.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  등록된 수수료 정보가 아직 없어요.
+                  {region.name}에는 이 품목의 수수료 정보가 아직 없어요.
                 </p>
               ) : (
                 <ul className="flex flex-col divide-y divide-border">
@@ -138,6 +171,12 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
                     >
                       <span className="text-sm text-foreground">
                         {f.spec_label}
+                        {/* 무상수거 등 비고 */}
+                        {f.note && (
+                          <span className="mt-0.5 block text-xs text-muted-foreground">
+                            {f.note}
+                          </span>
+                        )}
                       </span>
                       <span className="shrink-0 font-mono font-semibold text-primary">
                         {krw(f.amount_krw)}
@@ -174,7 +213,7 @@ export function WasteSearch({ region, items, fees, tips }: Props) {
               </section>
             )}
 
-            {/* 신고 딥링크: 실제 신고/결제는 지자체 시스템으로 토스 */}
+            {/* 신고 딥링크: 실제 신고·결제는 지자체 시스템으로 토스 */}
             {region.report_url ? (
               <a
                 href={region.report_url}
