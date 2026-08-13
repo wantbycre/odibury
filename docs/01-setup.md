@@ -7,6 +7,9 @@
 - 루트 레이아웃 한국어화(`lang="ko"`, 검색 의도 기반 메타데이터).
 - 한글 폰트 폴백 스택 추가(Geist엔 한글 글리프 없음 → OS 고딕 폴백).
 - 임시 랜딩(`page.tsx`) — 아이덴티티/가치제안/개발단계 표시.
+- **shadcn/ui** 초기화(`components.json`, `src/components/ui/button.tsx`, `src/lib/utils.ts`) — base color neutral, lucide 아이콘.
+- **폰트**: 본문 Noto Sans KR(`--font-sans`, 한글 포함) + 숫자/코드용 Geist Mono.
+- **테마**: primary/ring 을 환경 상징 **초록(emerald)** 으로 지정(라이트/다크 각각).
 - 문서: `README.md`, `docs/00-concept.md`, `docs/01-setup.md`.
 - `.gitignore`: `.env*` 무시하되 `.env.example`은 추적, `.kiro/`(KiroCrew 워크스페이스 설정) 무시.
 

@@ -1,16 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Noto_Sans_KR, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 /**
  * 폰트 로딩.
- * next/font 로 Geist(본문)와 Geist_Mono(코드/숫자)를 self-host 하여
- * 레이아웃 시프트(CLS) 없이 CSS 변수(--font-geist-sans 등)로 노출한다.
- * 실제 폰트 매핑은 globals.css 의 @theme(--font-sans/--font-mono)에서 처리.
+ * 본문은 한글 서비스이므로 Noto Sans KR 을 self-host 한다.
+ * next/font 가 CSS 변수 `--font-sans` 로 노출하고, globals.css 의
+ * `@theme(--font-sans)` + `html { @apply font-sans }` 가 이 변수를 소비한다.
+ * 숫자/코드(수수료·규격 등)는 Geist Mono 로 별도 노출한다(--font-geist-mono).
+ * display:"swap" → 폰트 로드 전엔 폴백으로 즉시 렌더(FOIT 방지).
  */
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const notoSansKr = Noto_Sans_KR({
+  variable: "--font-sans",
+  subsets: ["latin"], // 라틴만 preload; 한글 글리프는 필요 시 로드된다
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -35,9 +38,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // lang="ko": 한국어 서비스이므로 스크린리더/검색엔진에 언어를 명시한다.
     <html
       lang="ko"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${notoSansKr.variable} ${geistMono.variable} h-full antialiased`}
     >
-      {/* min-h-full + flex-col: 페이지가 짧아도 푸터/콘텐츠를 세로로 꽉 채우기 위한 골격 */}
+      {/* min-h-full + flex-col: 페이지가 짧아도 콘텐츠를 세로로 꽉 채우기 위한 골격 */}
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

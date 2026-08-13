@@ -19,7 +19,7 @@
 
 ## 기술 스택
 
-Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · (예정) shadcn/ui · Supabase
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind v4 · shadcn/ui · (예정) Supabase
 
 ## 개발
 
