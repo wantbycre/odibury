@@ -20,3 +20,6 @@ name,category,waste_type,keywords,default_method
 화장대,가구,large_waste,화장대,
 러닝머신,생활,large_waste,러닝머신|런닝머신|트레드밀,
 안마의자,가구,large_waste,안마의자|마사지의자,
+공기청정기,가전,large_waste,공기청정기|청정기,
+선풍기,가전,large_waste,선풍기|써큘레이터,
+가습기,가전,large_waste,가습기,

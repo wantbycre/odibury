@@ -5,12 +5,7 @@ import type { Region, Item, Fee, Tip } from "@/types/db";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 /** 원화 포맷: 3000 → "3,000원", 0 → "무료" */
 function krw(amount: number) {
@@ -40,7 +35,7 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
 
   const region = useMemo(
     () => regions.find((r) => r.id === regionId) ?? regions[0],
-    [regions, regionId]
+    [regions, regionId],
   );
 
   // 검색: 품목명 또는 keywords 동의어 부분일치(대소문자 무시)
@@ -55,7 +50,7 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
 
   const selected = useMemo(
     () => items.find((it) => it.id === selectedId) ?? null,
-    [items, selectedId]
+    [items, selectedId],
   );
 
   // 선택 품목 × 현재 지역의 규격별 수수료(저렴한 순)
@@ -71,7 +66,7 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
     return tips.filter(
       (t) =>
         t.region_id === region.id &&
-        (t.item_id === null || (selected && t.item_id === selected.id))
+        (t.item_id === null || (selected && t.item_id === selected.id)),
     );
   }, [tips, region, selected]);
 
@@ -87,40 +82,52 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
         </p>
       </header>
 
-      {/* 지역 선택 */}
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="region" className="text-sm font-medium">
-          동네 선택
-        </label>
-        <select
-          id="region"
-          value={regionId}
-          onChange={(e) => setRegionId(e.target.value)}
-          className="h-11 rounded-md border border-input bg-background px-3 text-base focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-        >
-          {regions.map((r) => (
-            <option key={r.id} value={r.id}>
-              {r.name}
-            </option>
-          ))}
-        </select>
+      <div className="flex justify-between items-end gap-2">
+        {/* 지역 선택 */}
+        <div className="flex flex-1 flex-col gap-1.5">
+          <label htmlFor="region" className="text-sm font-medium">
+            동네 선택
+          </label>
+          <select
+            id="region"
+            value={regionId}
+            onChange={(e) => setRegionId(e.target.value)}
+            className="h-11 rounded-md border border-input bg-background px-3 text-base focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            {regions.map((r) => (
+              <option key={r.id} value={r.id}>
+                {r.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-1.5">
+          <label htmlFor="region" className="text-sm font-medium">
+            품목 검색
+          </label>
+          {/* 검색창 */}
+          <Input
+            type="search"
+            placeholder="예: 책상, 매트리스, 냉장고…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="품목 검색"
+            className="h-11 text-base w-full"
+          />
+        </div>
       </div>
 
-      {/* 검색창 */}
-      <Input
-        type="search"
-        placeholder="예: 책상, 매트리스, 냉장고…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        aria-label="품목 검색"
-        className="h-12 text-base"
-      />
+      <p className="text-sm font-medium mb-[-15px]">
+        원하는 품목을 선택하세요.
+      </p>
 
       {/* 품목 후보 칩 */}
       <div className="flex flex-wrap gap-2">
         {filtered.length === 0 ? (
           <p className="text-sm text-muted-foreground">
-            &lsquo;{query}&rsquo; 와 맞는 품목이 없어요. 다른 이름으로 검색해보세요.
+            &lsquo;{query}&rsquo; 와 맞는 품목이 없어요. 다른 이름으로
+            검색해보세요.
           </p>
         ) : (
           filtered.map((it) => (
@@ -128,7 +135,7 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
               key={it.id}
               type="button"
               onClick={() => setSelectedId(it.id)}
-              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+              className={`rounded-md border px-3 py-1.5 text-sm transition-colors ${
                 selectedId === it.id
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-background hover:bg-muted"
@@ -142,11 +149,11 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
 
       {/* 결과 카드 */}
       {selected && (
-        <Card>
+        <Card className="bg-muted">
           <CardHeader>
             <div className="flex items-center gap-2">
               <CardTitle className="text-xl">{selected.name}</CardTitle>
-              <Badge variant="secondary">{selected.category}</Badge>
+              <Badge variant="destructive">{selected.category}</Badge>
               <span className="ml-auto text-sm text-muted-foreground">
                 {region.name}
               </span>
@@ -173,7 +180,7 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
                         {f.spec_label}
                         {/* 무상수거 등 비고 */}
                         {f.note && (
-                          <span className="mt-0.5 block text-xs text-muted-foreground">
+                          <span className="mt-0.5 block text-xs text-destructive">
                             {f.note}
                           </span>
                         )}
@@ -201,8 +208,10 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
 
             {/* 지역 꿀팁 */}
             {selectedTips.length > 0 && (
-              <section className="rounded-lg bg-muted p-3">
-                <h3 className="mb-1 text-sm font-semibold">💡 알아두면 좋아요</h3>
+              <section className="rounded-lg bg-white p-3">
+                <h3 className="mb-1 text-sm font-semibold">
+                  💡 알아두면 좋아요
+                </h3>
                 <ul className="flex flex-col gap-1">
                   {selectedTips.map((t) => (
                     <li key={t.id} className="text-sm text-muted-foreground">
@@ -231,7 +240,8 @@ export function WasteSearch({ regions, items, fees, tips }: Props) {
               </Button>
             )}
             <p className="text-center text-xs text-muted-foreground">
-              신고·결제는 {region.sigungu} 시스템에서 진행돼요. 어디버려는 정보만 안내해요.
+              신고·결제는 {region.sigungu} 시스템에서 진행돼요. 어디버려는
+              정보만 안내해요.
             </p>
           </CardContent>
         </Card>
